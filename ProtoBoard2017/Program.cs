@@ -24,6 +24,7 @@ namespace ProtoBoard2017
             byte tData;
             
             int tMotorSpeed;
+            int counter;
 
             while(!arduino.Status())
             {
@@ -76,13 +77,13 @@ namespace ProtoBoard2017
                 tData = (byte)(tMotorSpeed - (tMotorSpeed % 10)); //Outputs 100 place of motor speed
                 tData += (byte)(tMotorSpeed - tData);
 
-                if (controller.GetAxis(OI.Axis.right_y) == -1)
+                if (controller.GetAxis(OI.Axis.right_y) == -1 && (counter % 1000) == 0)
                 {
                     arduino.sendCommand('U', 'P', tData, talon.GetOutputVoltage(), (byte)talon.GetOutputCurrent());
-                } else if (controller.GetAxis(OI.Axis.right_y) == 1)
+                } else if (controller.GetAxis(OI.Axis.right_y) == 1 && (counter % 1000) == 0)
                 {
                     arduino.sendCommand('D', 'O', tData, talon.GetOutputVoltage(), (byte)talon.GetOutputCurrent());
-                } else
+                } else if ((counter % 1000) == 0)
                 {
                     arduino.sendCommand('0', '0', tData, talon.GetOutputVoltage(), (byte)talon.GetOutputCurrent());
                 }
@@ -92,7 +93,7 @@ namespace ProtoBoard2017
                 CTRE.Watchdog.Feed();
                 Debug.Print("Motor Speed = " + motorSpeed);
                 Debug.Print("tData = " + tData);
-
+                counter++;
                 
             }
         }
