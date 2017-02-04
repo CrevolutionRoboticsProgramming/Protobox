@@ -20,6 +20,11 @@ namespace ProtoBoard2017
             byte tData;
             
             int tMotorSpeed;
+
+            while(!arduino.Status())
+            {
+                Debug.Print("Waiting for arduino");
+            }
             
             while (true)
             {

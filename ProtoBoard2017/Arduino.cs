@@ -1,5 +1,6 @@
 using System;
 using Microsoft.SPOT;
+using Microsoft.SPOT.Hardware;
 using System.IO.Ports;
 
 namespace ProtoBoard2017
@@ -7,9 +8,11 @@ namespace ProtoBoard2017
     class Arduino
     {
         private SerialPort uart;
+        private InputPort stat;
 
         public Arduino(string uartPort, int baudRate)
         {
+            stat = new InputPort(CTRE.HERO.IO.Port1.Pin3, true, Port.ResistorMode.PullUp);
             uart = new SerialPort(uartPort, baudRate);
             uart.Open();
         }
@@ -29,6 +32,17 @@ namespace ProtoBoard2017
             values[5] = cOut;
             
             uart.Write(values, 0, 6);
+        }
+
+        public bool Status()
+        {
+            if(stat.Read())
+            {
+                return false;
+            } else
+            {
+                return true;
+            }
         }
     }
 }
