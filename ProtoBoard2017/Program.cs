@@ -10,35 +10,33 @@ namespace ProtoBoard2017
     {
         public static void Main()
         {
+            Arduino arduino = new Arduino(CTRE.HERO.IO.Port1.UART, 9600);
             TalonSrx talon = new TalonSrx(1);
             TalonSrx talon2 = new TalonSrx(2);
             OI controller = new OI(new Gamepad(new UsbHostDevice()));
-            float motorSpeed = .70f;
-            float motorStoredSpeed = motorSpeed;
+            int motorSpeed = 700;
+            int motorStoredSpeed = motorSpeed;
             bool isPressed = false;
-
-            System.IO.Ports.SerialPort uart = new System.IO.Ports.SerialPort(CTRE.HERO.IO.Port1.UART, 9600);
-            byte[] data = new byte[7];
-            byte tData = 0;
-
-            uart.Open();
+            byte tData;
+            
+            int tMotorSpeed;
             
             while (true)
             {
                 if(controller.GetButton(OI.Button.a) && !isPressed)
                 {
-                    motorSpeed += 0.05f;
+                    motorSpeed += 50;
                 } else if (controller.GetButton(OI.Button.b) && !isPressed)
                 {
-                    motorSpeed -= 0.05f;
+                    motorSpeed -= 50;
                 }
 
                 if(controller.GetButton(OI.Button.x) && !isPressed)
                 {
-                    motorSpeed += 0.01f;
+                    motorSpeed += 10;
                 } else if (controller.GetButton(OI.Button.y) && !isPressed)
                 {
-                    motorSpeed -= 0.01f;
+                    motorSpeed -= 10;
                 }
 
                 if (controller.GetButton(OI.Button.a) || controller.GetButton(OI.Button.b) || controller.GetButton(OI.Button.x) || controller.GetButton(OI.Button.y))
@@ -57,27 +55,30 @@ namespace ProtoBoard2017
                 {
                     motorSpeed = motorStoredSpeed;
                 }
-                tData = (byte)(motorSpeed * 100);
-                if(motorSpeed > 1)
+
+                tMotorSpeed = motorSpeed / 10;
+
+                tData = (byte)(tMotorSpeed - (tMotorSpeed % 10)); //Outputs 100 place of motor speed
+                tData += (byte)(tMotorSpeed - tData);
+
+                if (controller.GetAxis(OI.Axis.right_y) == -1)
                 {
-                    motorSpeed = 1;
-                    tData = (byte)(motorSpeed * 100);
-                } else if (motorSpeed < -1)
+                    arduino.sendCommand('U', 'P', tData, talon.GetOutputVoltage(), (byte)talon.GetOutputCurrent());
+                } else if (controller.GetAxis(OI.Axis.right_y) == 1)
                 {
-                    motorSpeed = -1;
+                    arduino.sendCommand('D', 'O', tData, talon.GetOutputVoltage(), (byte)talon.GetOutputCurrent());
+                } else
+                {
+                    arduino.sendCommand('0', '0', tData, talon.GetOutputVoltage(), (byte)talon.GetOutputCurrent());
                 }
 
-                if (motorSpeed < 0)
-                {
-                    tData = (byte)(motorSpeed * -1);
-                }
-                uart.WriteByte(tData);
-
-                talon.Set(motorSpeed);
-                talon2.Set(motorSpeed);
+                talon.Set(motorSpeed / 100);
+                talon2.Set(motorSpeed / 100);
                 CTRE.Watchdog.Feed();
                 Debug.Print("Motor Speed = " + motorSpeed);
+                Debug.Print("tData = " + tData);
 
+                
             }
         }
     }
