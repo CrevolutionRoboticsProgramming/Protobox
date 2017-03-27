@@ -4,6 +4,46 @@ using Microsoft.SPOT;
 using Microsoft.SPOT.Hardware;
 using CTRE;
 
+/*/=============================================
+ * _____ Code for the Crevolution ProtoBox _____
+ * =============================================
+ * 
+ * ~ Jason Deal and Martin Smooger 
+ * 
+ *Proto Box Uses :
+ * Testing motors on ProtoTypes
+ * Code logic testing 
+ * Teach new Programmers close looping and Vision Processing 
+ * Can be configured for a quick robot
+ * 
+ *Proto Box Features :
+ * Crevo Cards:
+ *  Main "Mother Board" Card (Holds Hero, Arduino, and Raspberry PI) 
+ *  Talon SRX Card (3 Talons per card)
+ *  Sensor Card (Digital and Analog) 
+ *  Pneumatics Card
+ *  
+ * Close Looping on manipluators 
+ *  
+ *Proto Box Equitment :
+ *  Hero Development Board
+ *  Power Distribution Panel 
+ *  Pneumattics Control Module 
+ *  Voltage Regulator Module 
+ *  Talon SRX 
+ *  SRX Magnetic Encoder
+ *  Talon SRX Analog Breakout Board 
+ *  Gadgeteer Display Module
+ *  Gadgeteer Driver Module 
+ *  Gadgeteer Breakout Module 
+ *    
+ * Non Cross the road electronics Componets: 
+ *  Arduino Uno 
+ *  Raspberry PI 2 
+ *  LCD Touch Screen 
+ *  Cooling fan 
+/*/
+
 namespace ProtoBoard2017
 {
     public class Program
@@ -14,6 +54,7 @@ namespace ProtoBoard2017
             TalonSrx talon = new TalonSrx(1);
             TalonSrx talon2 = new TalonSrx(2);
             OI controller = new OI(new Gamepad(new UsbHostDevice()));
+
             int motorSpeed = 0;
             int motorStoredSpeed = 700;
 
